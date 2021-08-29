@@ -4,9 +4,13 @@ struct RoundedTextView: View {
     @State private var text: String = ""
 
     var body: some View {
-        TextView("Placeholder", text: $text)
-            .padding(.horizontal, 10)
-            .padding(.vertical, 6)
+        TextView($text)
+            .font(.system(.headline))
+            .placeholder("Enter some text")
+            .multilineTextAlignment(.leading)
+            .enableScrolling(true)
+            .padding(.leading, 5)
+            .frame(maxHeight: 100)
             .background(Color.white)
             .overlay(
                 RoundedRectangle(cornerRadius: 10)
@@ -26,21 +30,20 @@ struct TextView_Previews: PreviewProvider {
 struct TextView: View {
 
     @Environment(\.layoutDirection) private var layoutDirection
+
     @Binding private var text: String
     
     @State private var calculatedHeight: CGFloat = 44
     @State private var isEmpty: Bool = false
 
-    private var title: String
     private var onEditingChanged: (() -> Void)?
     private var shouldEditInRange: ((Range<String.Index>, String) -> Bool)?
     private var onCommit: (() -> Void)?
 
-    private var placeholderFont: Font = .callout
-    private var placeholderAlignment: TextAlignment = .leading
+    private var placeholderView: AnyView?
     private var foregroundColor: UIColor = .label
     private var autocapitalization: UITextAutocapitalizationType = .sentences
-    private var multilineTextAlignment: NSTextAlignment = .left
+    private var multilineTextAlignment: TextAlignment = .leading
     private var font: UIFont = .preferredFont(forTextStyle: .callout)
     private var returnKeyType: UIReturnKeyType?
     private var clearsOnInsertion: Bool = false
@@ -60,15 +63,13 @@ struct TextView: View {
         }
     }
 
-    init(_ title: String,
-         text: Binding<String>,
+    init(_ text: Binding<String>,
          shouldEditInRange: ((Range<String.Index>, String) -> Bool)? = nil,
          onEditingChanged: (() -> Void)? = nil,
          onCommit: (() -> Void)? = nil) {
-        self.title = title
 
         _text = text
-        _isEmpty = State(initialValue: self.text.isEmpty)
+        _isEmpty = State(initialValue: text.wrappedValue.isEmpty)
 
         self.onCommit = onCommit
         self.shouldEditInRange = shouldEditInRange
@@ -76,47 +77,63 @@ struct TextView: View {
     }
 
     var body: some View {
-        SwiftUITextView(internalText,
-                        foregroundColor: foregroundColor,
-                        font: font,
-                        multilineTextAlignment: multilineTextAlignment,
-                        autocapitalization: autocapitalization,
-                        returnKeyType: returnKeyType,
-                        clearsOnInsertion: clearsOnInsertion,
-                        autocorrection: autocorrection,
-                        truncationMode: truncationMode,
-                        isSecure: isSecure,
-                        isEditable: isEditable,
-                        isSelectable: isSelectable,
-                        isScrollingEnabled: isScrollingEnabled,
-                        enablesReturnKeyAutomatically: enablesReturnKeyAutomatically,
-                        autoDetectionTypes: autoDetectionTypes,
-                        calculatedHeight: $calculatedHeight,
-                        shouldEditInRange: shouldEditInRange,
-                        onEditingChanged: onEditingChanged,
-                        onCommit: onCommit)
-            .frame(
-                minHeight: isScrollingEnabled ? 0 : calculatedHeight,
-                maxHeight: isScrollingEnabled ? .infinity : calculatedHeight
+        SwiftUITextView(
+            internalText,
+            foregroundColor: foregroundColor,
+            font: font,
+            multilineTextAlignment: multilineTextAlignment,
+            autocapitalization: autocapitalization,
+            returnKeyType: returnKeyType,
+            clearsOnInsertion: clearsOnInsertion,
+            autocorrection: autocorrection,
+            truncationMode: truncationMode,
+            isSecure: isSecure,
+            isEditable: isEditable,
+            isSelectable: isSelectable,
+            isScrollingEnabled: isScrollingEnabled,
+            enablesReturnKeyAutomatically: enablesReturnKeyAutomatically,
+            autoDetectionTypes: autoDetectionTypes,
+            calculatedHeight: $calculatedHeight,
+            shouldEditInRange: shouldEditInRange,
+            onEditingChanged: onEditingChanged,
+            onCommit: onCommit
         )
-            .background(placeholderView, alignment: .leading)
-    }
-
-    @ViewBuilder
-    var placeholderView: some View {
-        if isEmpty {
-            Text(title)
-                .foregroundColor(.secondary)
-                .multilineTextAlignment(placeholderAlignment)
-                .font(placeholderFont)
-        } else {
-            EmptyView()
-        }
+        .frame(
+            minHeight: isScrollingEnabled ? 0 : calculatedHeight,
+            maxHeight: isScrollingEnabled ? .infinity : calculatedHeight
+        )
+        .background(
+            placeholderView?
+                .foregroundColor(Color(.placeholderText))
+                .multilineTextAlignment(multilineTextAlignment)
+                .font(Font(font))
+                .padding(.horizontal, isScrollingEnabled ? 5 : 0)
+                .padding(.vertical, isScrollingEnabled ? 8 : 0)
+                .opacity(isEmpty ? 1 : 0),
+            alignment: .topLeading
+        )
     }
 
 }
 
 extension TextView {
+
+    func placeholder(_ placeholder: String) -> TextView {
+        self.placeholder(placeholder) { $0 }
+    }
+
+    func placeholder<V: View>(_ placeholder: String, _ configure: (Text) -> V) -> TextView {
+        var view = self
+        let text = Text(placeholder)
+        view.placeholderView = AnyView(configure(text))
+        return view
+    }
+
+    func placeholder<V: View>(_ placeholder: V) -> TextView {
+        var view = self
+        view.placeholderView = AnyView(placeholder)
+        return view
+    }
 
     func autoDetectDataTypes(_ types: UIDataDetectorTypes) -> TextView {
         var view = self
@@ -138,27 +155,13 @@ extension TextView {
 
     func multilineTextAlignment(_ alignment: TextAlignment) -> TextView {
         var view = self
-        view.placeholderAlignment = alignment
-        switch alignment {
-        case .leading:
-            view.multilineTextAlignment = layoutDirection ~= .leftToRight ? .left : .right
-        case .trailing:
-            view.multilineTextAlignment = layoutDirection ~= .leftToRight ? .right : .left
-        case .center:
-            view.multilineTextAlignment = .center
-        }
+        view.multilineTextAlignment = alignment
         return view
     }
 
     func font(_ font: UIFont) -> TextView {
         var view = self
         view.font = font
-        return view
-    }
-
-    func placeholderFont(_ font: Font) -> TextView {
-        var view = self
-        view.placeholderFont = font
         return view
     }
 
@@ -237,7 +240,7 @@ private struct SwiftUITextView: UIViewRepresentable {
 
     private let foregroundColor: UIColor
     private let autocapitalization: UITextAutocapitalizationType
-    private let multilineTextAlignment: NSTextAlignment
+    private var multilineTextAlignment: TextAlignment
     private let font: UIFont
     private let returnKeyType: UIReturnKeyType?
     private let clearsOnInsertion: Bool
@@ -253,7 +256,7 @@ private struct SwiftUITextView: UIViewRepresentable {
     init(_ text: Binding<String>,
          foregroundColor: UIColor,
          font: UIFont,
-         multilineTextAlignment: NSTextAlignment,
+         multilineTextAlignment: TextAlignment,
          autocapitalization: UITextAutocapitalizationType,
          returnKeyType: UIReturnKeyType?,
          clearsOnInsertion: Bool,
@@ -275,10 +278,9 @@ private struct SwiftUITextView: UIViewRepresentable {
         self.onCommit = onCommit
         self.shouldEditInRange = shouldEditInRange
         self.onEditingChanged = onEditingChanged
-
+        self.multilineTextAlignment = multilineTextAlignment
         self.foregroundColor = foregroundColor
         self.font = font
-        self.multilineTextAlignment = multilineTextAlignment
         self.autocapitalization = autocapitalization
         self.returnKeyType = returnKeyType
         self.clearsOnInsertion = clearsOnInsertion
@@ -297,8 +299,6 @@ private struct SwiftUITextView: UIViewRepresentable {
     func makeUIView(context: Context) -> UIKitTextView {
         let view = UIKitTextView()
         view.delegate = context.coordinator
-        view.textContainer.lineFragmentPadding = 0
-        view.textContainerInset = .zero
         view.backgroundColor = UIColor.clear
         view.adjustsFontForContentSizeCategory = true
         view.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
@@ -308,7 +308,6 @@ private struct SwiftUITextView: UIViewRepresentable {
     func updateUIView(_ view: UIKitTextView, context: Context) {
         view.text = text
         view.font = font
-        view.textAlignment = multilineTextAlignment
         view.textColor = foregroundColor
         view.autocapitalizationType = autocapitalization
         view.autocorrectionType = autocorrection
@@ -316,6 +315,15 @@ private struct SwiftUITextView: UIViewRepresentable {
         view.isSelectable = isSelectable
         view.isScrollEnabled = isScrollingEnabled
         view.dataDetectorTypes = autoDetectionTypes
+
+        switch multilineTextAlignment {
+        case .leading:
+            view.textAlignment = view.traitCollection.layoutDirection ~= .leftToRight ? .left : .right
+        case .trailing:
+            view.textAlignment = view.traitCollection.layoutDirection ~= .leftToRight ? .right : .left
+        case .center:
+            view.textAlignment = .center
+        }
 
         if let value = enablesReturnKeyAutomatically {
             view.enablesReturnKeyAutomatically = value
@@ -327,6 +335,11 @@ private struct SwiftUITextView: UIViewRepresentable {
             view.returnKeyType = returnKeyType
         } else {
             view.returnKeyType = onCommit == nil ? .default : .done
+        }
+
+        if !isScrollingEnabled {
+            view.textContainer.lineFragmentPadding = 0
+            view.textContainerInset = .zero
         }
 
         SwiftUITextView.recalculateHeight(view: view, result: $calculatedHeight)
