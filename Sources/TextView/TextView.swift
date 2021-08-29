@@ -1,15 +1,25 @@
 import SwiftUI
 
+struct RoundedTextView: View {
+    @State private var text: String = ""
+
+    var body: some View {
+        TextView("Placeholder", text: $text)
+            .padding(.horizontal, 10)
+            .padding(.vertical, 6)
+            .background(Color.white)
+            .overlay(
+                RoundedRectangle(cornerRadius: 10)
+                    .stroke(lineWidth: 1)
+                    .foregroundColor(Color(.placeholderText))
+            )
+            .padding()
+    }
+}
+
 struct TextView_Previews: PreviewProvider {
     static var previews: some View {
-        VStack(spacing: 5) {
-            TextView("Placeholder", text: .constant(""))
-                .font(.system(.body, design: .serif))
-                .placeholderFont(Font.system(.body, design: .serif))
-                .border(Color.black, width: 1)
-                .padding()
-        }
-        .previewLayout(.sizeThatFits)
+        RoundedTextView()
     }
 }
 
@@ -26,12 +36,12 @@ struct TextView: View {
     private var shouldEditInRange: ((Range<String.Index>, String) -> Bool)?
     private var onCommit: (() -> Void)?
 
-    private var placeholderFont: Font = .body
+    private var placeholderFont: Font = .callout
     private var placeholderAlignment: TextAlignment = .leading
     private var foregroundColor: UIColor = .label
     private var autocapitalization: UITextAutocapitalizationType = .sentences
     private var multilineTextAlignment: NSTextAlignment = .left
-    private var font: UIFont = .preferredFont(forTextStyle: .body)
+    private var font: UIFont = .preferredFont(forTextStyle: .callout)
     private var returnKeyType: UIReturnKeyType?
     private var clearsOnInsertion: Bool = false
     private var autocorrection: UITextAutocorrectionType = .default
