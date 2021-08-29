@@ -14,12 +14,12 @@ Provides a SwiftUI multi-line TextView implementation with support for iOS v13+
 
 ## Example
 
-<!--```swift-->
+```swift
 TextView("Placeholder", text: $text, onCommit: commit)
     .font(.system(.body, design: .rounded))
     .border(Color.gray, width: 1)
     .padding()
-<!--```-->
+```
 
 ## Installation
 
