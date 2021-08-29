@@ -4,7 +4,8 @@ Provides a SwiftUI multi-line TextView implementation with support for iOS v13+
 
 ## WIP
 
-- [ ] Flexible sizing (correctly it only auto-sizes its height)
+- [x] Flexible sizing (correctly it only auto-sizes its height)
+      You can enable this by setting `enableScrolling(true)` 
 - [ ] Improved formatting support
 - [ ] Placeholder support
  
