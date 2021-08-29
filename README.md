@@ -12,7 +12,6 @@ Provides a SwiftUI multi-line TextView implementation with support for iOS v13+
 
 - Configure all properties via modifiers
 - Multi-line text
-- Formatting with attributed string
 - No predefined design, full-flexibility to design in Swift UI
 - UIFont extensions to give you SwiftUI Font APIs
 - Auto-sizes height to fit content as you type
