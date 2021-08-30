@@ -1,4 +1,18 @@
-import UIKit
+import SwiftUI
+
+public extension UIFont {
+    static var caption2: UIFont = .preferredFont(forTextStyle: .caption2)
+    static var caption: UIFont = .preferredFont(forTextStyle: .caption1)
+    static var footnote: UIFont = .preferredFont(forTextStyle: .footnote)
+    static var callout: UIFont = .preferredFont(forTextStyle: .callout)
+    static var body: UIFont = .preferredFont(forTextStyle: .body)
+    static var subheadline: UIFont = .preferredFont(forTextStyle: .subheadline)
+    static var headline: UIFont = .preferredFont(forTextStyle: .headline)
+    static var title3: UIFont = .preferredFont(forTextStyle: .title3)
+    static var title2: UIFont = .preferredFont(forTextStyle: .title2)
+    static var title: UIFont = .preferredFont(forTextStyle: .title1)
+    static var largeTitle: UIFont = .preferredFont(forTextStyle: .largeTitle)
+}
 
 public extension UIFont {
 

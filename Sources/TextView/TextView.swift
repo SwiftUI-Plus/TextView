@@ -4,20 +4,18 @@ struct RoundedTextView: View {
     @State private var text: String = ""
 
     var body: some View {
-        TextView($text)
-            .font(.system(.headline))
-            .placeholder("Enter some text")
-            .multilineTextAlignment(.leading)
-            .enableScrolling(true)
-            .padding(.leading, 5)
-            .frame(maxHeight: 100)
-            .background(Color.white)
-            .overlay(
-                RoundedRectangle(cornerRadius: 10)
-                    .stroke(lineWidth: 1)
-                    .foregroundColor(Color(.placeholderText))
-            )
-            .padding()
+        GeometryReader { _ in
+            TextView($text)
+                .placeholder("Enter some text")
+                .padding(10)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 10)
+                        .stroke(lineWidth: 1)
+                        .foregroundColor(Color(.placeholderText))
+                )
+                .padding()
+        }
+        .background(Color(.systemBackground).edgesIgnoringSafeArea(.all))
     }
 }
 
@@ -27,7 +25,7 @@ struct TextView_Previews: PreviewProvider {
     }
 }
 
-struct TextView: View {
+public struct TextView: View {
 
     @Environment(\.layoutDirection) private var layoutDirection
 
@@ -44,7 +42,7 @@ struct TextView: View {
     private var foregroundColor: UIColor = .label
     private var autocapitalization: UITextAutocapitalizationType = .sentences
     private var multilineTextAlignment: TextAlignment = .leading
-    private var font: UIFont = .preferredFont(forTextStyle: .callout)
+    private var font: UIFont = .preferredFont(forTextStyle: .body)
     private var returnKeyType: UIReturnKeyType?
     private var clearsOnInsertion: Bool = false
     private var autocorrection: UITextAutocorrectionType = .default
@@ -63,7 +61,7 @@ struct TextView: View {
         }
     }
 
-    init(_ text: Binding<String>,
+    public init(_ text: Binding<String>,
          shouldEditInRange: ((Range<String.Index>, String) -> Bool)? = nil,
          onEditingChanged: (() -> Void)? = nil,
          onCommit: (() -> Void)? = nil) {
@@ -76,7 +74,7 @@ struct TextView: View {
         self.onEditingChanged = onEditingChanged
     }
 
-    var body: some View {
+    public var body: some View {
         SwiftUITextView(
             internalText,
             foregroundColor: foregroundColor,
@@ -116,7 +114,7 @@ struct TextView: View {
 
 }
 
-extension TextView {
+public extension TextView {
 
     func placeholder(_ placeholder: String) -> TextView {
         self.placeholder(placeholder) { $0 }
@@ -300,7 +298,6 @@ private struct SwiftUITextView: UIViewRepresentable {
         let view = UIKitTextView()
         view.delegate = context.coordinator
         view.backgroundColor = UIColor.clear
-        view.adjustsFontForContentSizeCategory = true
         view.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
         return view
     }
@@ -308,6 +305,7 @@ private struct SwiftUITextView: UIViewRepresentable {
     func updateUIView(_ view: UIKitTextView, context: Context) {
         view.text = text
         view.font = font
+        view.adjustsFontForContentSizeCategory = true
         view.textColor = foregroundColor
         view.autocapitalizationType = autocapitalization
         view.autocorrectionType = autocorrection
