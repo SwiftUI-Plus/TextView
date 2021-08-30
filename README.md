@@ -19,9 +19,16 @@ Provides a SwiftUI multi-line TextView implementation with support for iOS v13+
 ## Example
 
 ```swift
-TextView("Placeholder", text: $text, onCommit: commit)
-    .font(.system(.body, design: .rounded))
-    .border(Color.gray, width: 1)
+TextView($text)
+    .placeholder("Enter some text") { view in 
+        view.foregroundColor(.gray)
+    }
+    .padding(10)
+    .overlay(
+        RoundedRectangle(cornerRadius: 10)
+            .stroke(lineWidth: 1)
+            .foregroundColor(Color(.placeholderText))
+    )
     .padding()
 ```
 
