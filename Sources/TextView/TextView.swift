@@ -362,6 +362,7 @@ private struct SwiftUITextView: UIViewRepresentable {
         }
 
         SwiftUITextView.recalculateHeight(view: view, result: $calculatedHeight)
+        view.setNeedsDisplay()
     }
 
     @discardableResult func makeCoordinator() -> Coordinator {
