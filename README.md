@@ -1,26 +1,27 @@
 # TextView
 
+> Also available as a part of my [SwiftUI+ Collection](https://benkau.com/packages.json) – just add it to Xcode 13+
+
 Provides a SwiftUI multi-line TextView implementation with support for iOS v13+
 
 ## WIP
 
-- [ ] Improved formatting support
- 
+-   [ ] Improved formatting support
 
 ## Features
 
-- Configure all properties via modifiers
-- Multi-line text
-- Placeholder
-- No predefined design, full-flexibility to design in Swift UI
-- UIFont extensions to give you SwiftUI Font APIs
-- Auto-sizes height to fit content as you type
+-   Configure all properties via modifiers
+-   Multi-line text
+-   Placeholder
+-   No predefined design, full-flexibility to design in Swift UI
+-   UIFont extensions to give you SwiftUI Font APIs
+-   Auto-sizes height to fit content as you type
 
 ## Example
 
 ```swift
 TextView($text)
-    .placeholder("Enter some text") { view in 
+    .placeholder("Enter some text") { view in
         view.foregroundColor(.gray)
     }
     .padding(10)
@@ -34,7 +35,7 @@ TextView($text)
 
 ## Installation
 
-The code is packaged as a framework. You can install manually (by copying the files in the `Sources` directory) or using Swift Package Manager (__preferred__)
+The code is packaged as a framework. You can install manually (by copying the files in the `Sources` directory) or using Swift Package Manager (**preferred**)
 
 To install using Swift Package Manager, add this to the `dependencies` section of your `Package.swift` file:
 
