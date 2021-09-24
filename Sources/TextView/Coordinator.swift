@@ -110,10 +110,10 @@ extension TextView.Representable.Coordinator {
         textView.setNeedsDisplay()
     }
 
-    func recalculateHeight() {
+    private func recalculateHeight() {
         let newSize = textView.sizeThatFits(CGSize(width: textView.frame.width, height: .greatestFiniteMagnitude))
-
         guard calculatedHeight.wrappedValue != newSize.height else { return }
+
         DispatchQueue.main.async { // call in next render cycle.
             self.calculatedHeight.wrappedValue = newSize.height
         }
