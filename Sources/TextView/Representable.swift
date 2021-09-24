@@ -30,46 +30,7 @@ extension TextView {
         }
 
         func updateUIView(_ view: UIKitTextView, context: Context) {
-            view.attributedText = text
-            view.font = font
-            view.adjustsFontForContentSizeCategory = true
-            view.textColor = foregroundColor
-            view.autocapitalizationType = autocapitalization
-            view.autocorrectionType = autocorrection
-            view.isEditable = isEditable
-            view.isSelectable = isSelectable
-            view.isScrollEnabled = isScrollingEnabled
-            view.dataDetectorTypes = autoDetectionTypes
-            view.allowsEditingTextAttributes = allowsRichText
-
-            switch multilineTextAlignment {
-            case .leading:
-                view.textAlignment = view.traitCollection.layoutDirection ~= .leftToRight ? .left : .right
-            case .trailing:
-                view.textAlignment = view.traitCollection.layoutDirection ~= .leftToRight ? .right : .left
-            case .center:
-                view.textAlignment = .center
-            }
-
-            if let value = enablesReturnKeyAutomatically {
-                view.enablesReturnKeyAutomatically = value
-            } else {
-                view.enablesReturnKeyAutomatically = onCommit == nil ? false : true
-            }
-
-            if let returnKeyType = returnKeyType {
-                view.returnKeyType = returnKeyType
-            } else {
-                view.returnKeyType = onCommit == nil ? .default : .done
-            }
-
-            if !isScrollingEnabled {
-                view.textContainer.lineFragmentPadding = 0
-                view.textContainerInset = .zero
-            }
-
-            Self.recalculateHeight(view: view, result: $calculatedHeight)
-            view.setNeedsDisplay()
+            context.coordinator.update(representable: self)
         }
 
         @discardableResult func makeCoordinator() -> Coordinator {
@@ -80,15 +41,6 @@ extension TextView {
                 onEditingChanged: onEditingChanged,
                 onCommit: onCommit
             )
-        }
-
-        static func recalculateHeight(view: UIView, result: Binding<CGFloat>) {
-            let newSize = view.sizeThatFits(CGSize(width: view.frame.width, height: .greatestFiniteMagnitude))
-
-            guard result.wrappedValue != newSize.height else { return }
-            DispatchQueue.main.async { // call in next render cycle.
-                result.wrappedValue = newSize.height
-            }
         }
 
     }

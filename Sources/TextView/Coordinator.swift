@@ -39,7 +39,7 @@ extension TextView.Representable {
 
         func textViewDidChange(_ textView: UITextView) {
             text.wrappedValue = NSAttributedString(attributedString: textView.attributedText)
-            TextView.Representable.recalculateHeight(view: textView, result: calculatedHeight)
+            recalculateHeight()
             onEditingChanged?()
         }
 
@@ -61,6 +61,62 @@ extension TextView.Representable {
             }
         }
 
+    }
+
+}
+
+extension TextView.Representable.Coordinator {
+
+    func update(representable: TextView.Representable) {
+        textView.attributedText = representable.text
+        textView.font = representable.font
+        textView.adjustsFontForContentSizeCategory = true
+        textView.textColor = representable.foregroundColor
+        textView.autocapitalizationType = representable.autocapitalization
+        textView.autocorrectionType = representable.autocorrection
+        textView.isEditable = representable.isEditable
+        textView.isSelectable = representable.isSelectable
+        textView.isScrollEnabled = representable.isScrollingEnabled
+        textView.dataDetectorTypes = representable.autoDetectionTypes
+        textView.allowsEditingTextAttributes = representable.allowsRichText
+
+        switch representable.multilineTextAlignment {
+        case .leading:
+            textView.textAlignment = textView.traitCollection.layoutDirection ~= .leftToRight ? .left : .right
+        case .trailing:
+            textView.textAlignment = textView.traitCollection.layoutDirection ~= .leftToRight ? .right : .left
+        case .center:
+            textView.textAlignment = .center
+        }
+
+        if let value = representable.enablesReturnKeyAutomatically {
+            textView.enablesReturnKeyAutomatically = value
+        } else {
+            textView.enablesReturnKeyAutomatically = onCommit == nil ? false : true
+        }
+
+        if let returnKeyType = representable.returnKeyType {
+            textView.returnKeyType = returnKeyType
+        } else {
+            textView.returnKeyType = onCommit == nil ? .default : .done
+        }
+
+        if !representable.isScrollingEnabled {
+            textView.textContainer.lineFragmentPadding = 0
+            textView.textContainerInset = .zero
+        }
+
+        recalculateHeight()
+        textView.setNeedsDisplay()
+    }
+
+    func recalculateHeight() {
+        let newSize = textView.sizeThatFits(CGSize(width: textView.frame.width, height: .greatestFiniteMagnitude))
+
+        guard calculatedHeight.wrappedValue != newSize.height else { return }
+        DispatchQueue.main.async { // call in next render cycle.
+            self.calculatedHeight.wrappedValue = newSize.height
+        }
     }
 
 }
