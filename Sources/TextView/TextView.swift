@@ -6,9 +6,9 @@ public struct TextView: View {
     @Environment(\.layoutDirection) private var layoutDirection
 
     @Binding private var text: NSAttributedString
-    
+    @Binding private var isEmpty: Bool
+
     @State private var calculatedHeight: CGFloat = 44
-    @State private var isEmpty: Bool = false
 
     private var onEditingChanged: (() -> Void)?
     private var shouldEditInRange: ((Range<String.Index>, String) -> Bool)?
@@ -30,16 +30,6 @@ public struct TextView: View {
     private var autoDetectionTypes: UIDataDetectorTypes = []
     private var allowRichText: Bool
 
-    private var internalText: Binding<NSAttributedString> {
-        Binding(
-            get: { text },
-            set: {
-                text = $0
-                isEmpty = $0.string.isEmpty
-            }
-        )
-    }
-
     /// Makes a new TextView with the specified configuration
     /// - Parameters:
     ///   - text: A binding to the text
@@ -56,7 +46,10 @@ public struct TextView: View {
             set: { text.wrappedValue = $0.string }
         )
 
-        _isEmpty = State(initialValue: text.wrappedValue.isEmpty)
+        _isEmpty = Binding(
+            get: { text.wrappedValue.isEmpty },
+            set: { _ in }
+        )
 
         self.onCommit = onCommit
         self.shouldEditInRange = shouldEditInRange
@@ -75,7 +68,10 @@ public struct TextView: View {
                 onCommit: (() -> Void)? = nil
     ) {
         _text = text
-        _isEmpty = State(initialValue: text.wrappedValue.string.isEmpty)
+        _isEmpty = Binding(
+            get: { text.wrappedValue.string.isEmpty },
+            set: { _ in }
+        )
 
         self.onCommit = onCommit
         self.onEditingChanged = onEditingChanged

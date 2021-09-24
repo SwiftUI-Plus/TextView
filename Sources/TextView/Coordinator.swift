@@ -3,6 +3,8 @@ import SwiftUI
 extension TextView.Representable {
     final class Coordinator: NSObject, UITextViewDelegate {
 
+        internal let textView: UIKitTextView
+
         private var originalText: NSAttributedString = .init()
         private var text: Binding<NSAttributedString>
         private var calculatedHeight: Binding<CGFloat>
@@ -15,12 +17,20 @@ extension TextView.Representable {
              calculatedHeight: Binding<CGFloat>,
              shouldEditInRange: ((Range<String.Index>, String) -> Bool)?,
              onEditingChanged: (() -> Void)?,
-             onCommit: (() -> Void)?) {
+             onCommit: (() -> Void)?
+        ) {
+            textView = UIKitTextView()
+            textView.backgroundColor = .clear
+            textView.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
+
             self.text = text
             self.calculatedHeight = calculatedHeight
             self.shouldEditInRange = shouldEditInRange
             self.onEditingChanged = onEditingChanged
             self.onCommit = onCommit
+
+            super.init()
+            textView.delegate = self
         }
 
         func textViewDidBeginEditing(_ textView: UITextView) {

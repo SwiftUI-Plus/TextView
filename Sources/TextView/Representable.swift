@@ -26,11 +26,7 @@ extension TextView {
         var onCommit: (() -> Void)?
 
         func makeUIView(context: Context) -> UIKitTextView {
-            let view = UIKitTextView()
-            view.delegate = context.coordinator
-            view.backgroundColor = .clear
-            view.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
-            return view
+            context.coordinator.textView
         }
 
         func updateUIView(_ view: UIKitTextView, context: Context) {
@@ -77,7 +73,7 @@ extension TextView {
         }
 
         @discardableResult func makeCoordinator() -> Coordinator {
-            return Coordinator(
+            Coordinator(
                 text: $text,
                 calculatedHeight: $calculatedHeight,
                 shouldEditInRange: shouldEditInRange,
