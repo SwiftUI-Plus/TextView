@@ -67,8 +67,12 @@ extension TextView.Representable {
 
 extension TextView.Representable.Coordinator {
 
-    func update(representable: TextView.Representable) {
+  func update(representable: TextView.Representable, sourceTextView: UIKitTextView) {
+        //  Save range before updating text. We'll use this later
+        let activeRange = sourceTextView.selectedRange
         textView.attributedText = representable.text
+        //  To keep the cursor to where the user is, re-set the range before text is updated.
+        textView.selectedRange = activeRange
         textView.font = representable.font
         textView.adjustsFontForContentSizeCategory = true
         textView.textColor = representable.foregroundColor
@@ -105,7 +109,6 @@ extension TextView.Representable.Coordinator {
             textView.textContainer.lineFragmentPadding = 0
             textView.textContainerInset = .zero
         }
-
         recalculateHeight()
         textView.setNeedsDisplay()
     }

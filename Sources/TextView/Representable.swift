@@ -30,7 +30,7 @@ extension TextView {
         }
 
         func updateUIView(_ view: UIKitTextView, context: Context) {
-            context.coordinator.update(representable: self)
+            context.coordinator.update(representable: self, sourceTextView: view)
         }
 
         @discardableResult func makeCoordinator() -> Coordinator {
