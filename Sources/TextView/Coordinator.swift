@@ -71,7 +71,7 @@ extension TextView.Representable.Coordinator {
         //  Save range before updating text. We'll use this later
         let activeRange = sourceTextView.selectedRange
         textView.attributedText = representable.text
-        //  To keep the cursor to where the user is, re-set the range before text is updated.
+        //  To keep the cursor to where the user is, re-set the range
         textView.selectedRange = activeRange
         textView.font = representable.font
         textView.adjustsFontForContentSizeCategory = true
