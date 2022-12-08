@@ -68,7 +68,6 @@ extension TextView.Representable {
 extension TextView.Representable.Coordinator {
 
     func update(representable: TextView.Representable) {
-        textView.attributedText = representable.text
         textView.font = representable.font
         textView.adjustsFontForContentSizeCategory = true
         textView.textColor = representable.foregroundColor
