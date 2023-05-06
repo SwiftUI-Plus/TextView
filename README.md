@@ -1,3 +1,12 @@
+# DEPRECATED
+
+This library is now deprecated in favour of a more complete and SwiftUI friendly `TextEditor` backport:
+
+https://github.com/shaps80/SwiftUIBackports
+> See it in action here: https://twitter.com/shaps/status/1654972428286668800?s=20
+
+---
+
 # TextView
 
 > Also available as a part of my [SwiftUI+ Collection](https://benkau.com/packages.json) – just add it to Xcode 13+
