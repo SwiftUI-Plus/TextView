@@ -5,6 +5,8 @@ This library is now deprecated in favour of a more complete and SwiftUI friendly
 https://github.com/shaps80/SwiftUIBackports
 > See it in action here: https://twitter.com/shaps/status/1654972428286668800?s=20
 
+![TextEditor Backport](https://pbs.twimg.com/media/FvekWp2XwAICDRq?format=jpg&name=large)
+
 ---
 
 # TextView
